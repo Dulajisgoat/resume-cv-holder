@@ -355,6 +355,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Résumé</title>
+<script>
+(function(){try{var p=window.parent.document.documentElement,d=document.documentElement;
+  if(p.getAttribute('data-theme')==='light') d.setAttribute('data-theme','light');
+  if(p.classList.contains('lite')) d.classList.add('lite');}catch(e){}})();
+<\/script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -684,6 +689,150 @@
     .avatar-upload, .cv-upload, .cert-attach{ display:none !important; }
   }
 
+  /* ---------- experiences: images + video posts ---------- */
+  /* #experiences sits outside #resume-root so the résumé snapshot and field mapping never see it;
+     flex order slots it between #career and #skills without moving any résumé markup */
+  .wrap{ display:flex; flex-direction:column; }
+  #resume-root{ display:contents; }
+  #resume-root > #skills, #resume-root > #community, #resume-root > #certifications, #resume-root > #references, #resume-root > footer{ order:2; }
+  #experiences{ order:1; border-bottom:1px solid var(--line-soft); }
+
+  .exp-bar{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:22px; }
+  .exp-btn{
+    all:unset; cursor:pointer; font-family:inherit; font-weight:500; font-size:12px; color:var(--ink);
+    padding:10px 16px; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid transparent;
+    transition:all .2s var(--ease);
+  }
+  .exp-btn:hover{ background:rgba(176,58,63,0.3); border-color:var(--sanguine-bright); color:#fff; }
+  .exp-btn:active{ transform:scale(0.96); }
+  .exp-btn:focus-visible{ outline:1px solid var(--sanguine-bright); outline-offset:2px; }
+  .exp-btn[disabled]{ opacity:.5; cursor:default; pointer-events:none; }
+  .exp-status{ font-size:12px; color:var(--ink-dim); font-weight:400; letter-spacing:0.02em; min-height:1.4em; }
+
+  .exp-panel{ margin-top:8px; }
+  .exp-item{
+    display:grid; grid-template-columns:72px 1fr auto; gap:20px; align-items:center;
+    padding:20px 32px; border-top:1px solid var(--line-soft); cursor:pointer; position:relative; z-index:2;
+    transition:padding-left .3s var(--ease), background .3s var(--ease);
+  }
+  .exp-panel .exp-item:first-child{ border-top:none; }
+  .exp-item:hover{ padding-left:40px; background:rgba(255,255,255,0.02); }
+  .exp-item:focus-visible{ outline:1px solid var(--sanguine-bright); outline-offset:-3px; }
+  .exp-item.sel{ box-shadow:inset 2px 0 0 var(--sanguine-bright); }
+  .exp-thumb{
+    width:72px; height:54px; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:400; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint); text-align:center; line-height:1.3;
+  }
+  .exp-thumb img, .exp-thumb video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .exp-t{ font-weight:500; font-size:17px; letter-spacing:-0.01em; min-height:1.4em; }
+  .exp-m{ color:var(--ink-faint); font-size:12px; font-weight:300; margin-top:3px; }
+  .exp-x1{ color:var(--ink-dim); font-size:13.5px; font-weight:300; margin-top:6px; max-width:60ch; }
+  .exp-pill{ font-weight:500; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
+  .exp-pill.on{ color:var(--sanguine-bright); }
+  .exp-tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .exp-tag{ padding:5px 11px; font-size:11.5px; font-weight:400; color:var(--ink-dim); border-radius:999px; background:rgba(255,255,255,0.03); border:1px solid var(--line); }
+  .exp-empty{ padding:40px 32px; color:var(--ink-faint); font-size:14px; font-weight:300; position:relative; z-index:2; }
+  @media (max-width:640px){
+    .exp-item{ grid-template-columns:56px 1fr; padding:18px 20px; gap:14px; }
+    .exp-item:hover{ padding-left:28px; }
+    .exp-item .exp-pill{ grid-column:2; }
+    .exp-thumb{ width:56px; height:44px; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .exp-item, .exp-btn, .exp-drop, .exp-switch i, .exp-switch i::after, .exp-prog i{ transition:none; }
+  }
+  @media screen{
+    html[data-theme="light"]{
+      --bg:#F4ECE4;
+      --line:rgba(78,21,25,0.14);
+      --line-soft:rgba(78,21,25,0.07);
+      --ink:#2B1B19;
+      --ink-dim:#5C4A45;
+      --ink-faint:#75655E;
+      --sanguine-bright:#A33339;
+      --glass-fill:rgba(255,255,255,0.55);
+      --glass-border:rgba(122,32,39,0.16);
+      --glass-shadow:0 8px 32px rgba(78,21,25,0.14), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(78,21,25,0.06);
+    }
+    html[data-theme="light"] ::selection{ background:rgba(176,58,63,0.25); }
+    html[data-theme="light"] .glass::before{
+      background:linear-gradient(135deg, rgba(163,51,57,0.45), rgba(122,32,39,0.08) 40%, rgba(122,32,39,0.08) 60%, rgba(163,51,57,0.3));
+    }
+    html[data-theme="light"] .glass::after{ background:radial-gradient(ellipse at center top, rgba(255,255,255,0.7), transparent 70%); }
+  }
+  html.lite #webgl-bg, html.lite .stripes{ display:none; }
+  html.lite .glass{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+  /* lower-end device mode: no backdrop blur on the new panels */
+  html.lite #experiences .glass{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+  /* print: the résumé prints exactly as before (plain block flow); the experiences section is screen-only */
+  @media print{
+    .wrap{ display:block; }
+    #resume-root{ display:block; }
+    #experiences{ display:none !important; }
+  }
+
+  .exp-editor{ margin-top:28px; padding:36px clamp(24px,4vw,48px); }
+  .exp-editor > *{ position:relative; z-index:2; }
+  .exp-ed-head{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:26px; }
+  .exp-ed-head .kicker{ margin-bottom:0; }
+  .exp-ed-tools{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .exp-f{ display:block; margin-bottom:24px; }
+  .exp-label{ display:block; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; font-weight:500; }
+  .exp-field{
+    display:block; min-height:1.6em; padding:12px 16px; border-radius:var(--radius-md);
+    background:rgba(255,255,255,0.05); border:1px solid var(--line); font-weight:300; font-size:15px; color:var(--ink);
+    transition:border-color .2s var(--ease), background .2s var(--ease);
+  }
+  .exp-field:focus{ border-color:var(--sanguine-bright); }
+  .exp-title{ font-size:22px; font-weight:400; letter-spacing:-0.02em; }
+  .exp-bodyed{ min-height:180px; line-height:1.7; color:var(--ink-dim); }
+  .exp-switch{ all:unset; cursor:pointer; display:inline-flex; align-items:center; gap:10px; font-size:12px; font-weight:500; color:var(--ink-dim); }
+  .exp-switch i{
+    position:relative; display:block; width:38px; height:22px; border-radius:999px;
+    background:rgba(255,255,255,0.12); border:1px solid var(--line); transition:background .25s var(--ease), border-color .25s var(--ease);
+  }
+  .exp-switch i::after{ content:""; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:var(--ink); transition:transform .25s var(--ease); }
+  .exp-switch[aria-checked="true"]{ color:var(--ink); }
+  .exp-switch[aria-checked="true"] i{ background:rgba(176,58,63,0.5); border-color:var(--sanguine-bright); }
+  .exp-switch[aria-checked="true"] i::after{ transform:translateX(16px); }
+  .exp-switch:focus-visible{ outline:1px solid var(--sanguine-bright); outline-offset:3px; }
+
+  .exp-drop{
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:28px 20px; border-radius:var(--radius-md);
+    border:1px dashed var(--line); color:var(--ink-dim); font-size:13px; font-weight:300; cursor:pointer;
+    transition:border-color .2s var(--ease), background .2s var(--ease), color .2s var(--ease);
+  }
+  .exp-drop:hover, .exp-drop.over{ border-color:var(--sanguine-bright); background:rgba(176,58,63,0.1); color:var(--ink); }
+  .exp-drop:focus-visible{ outline:1px solid var(--sanguine-bright); outline-offset:3px; }
+  .exp-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:16px; margin-top:18px; }
+  .exp-tile{ border-radius:var(--radius-md); border:1px solid var(--line); background:rgba(255,255,255,0.03); overflow:hidden; display:flex; flex-direction:column; }
+  .exp-tbox{ position:relative; height:136px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; }
+  .exp-tbox img, .exp-tbox video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .exp-badge{
+    position:absolute; left:8px; top:8px; padding:3px 8px; border-radius:999px; font-size:10px; font-weight:500; letter-spacing:0.15em;
+    text-transform:uppercase; color:var(--ink); background:var(--bg); border:1px solid var(--line);
+  }
+  .exp-prog{ position:absolute; left:10px; right:10px; bottom:10px; height:4px; border-radius:999px; background:var(--line); overflow:hidden; }
+  .exp-prog i{ display:block; height:100%; width:0; background:var(--sanguine-bright); transition:width .2s var(--ease); }
+  .exp-pct{ font-size:12px; font-weight:400; color:var(--ink-dim); }
+  .exp-err{ padding:10px 12px; font-size:12px; font-weight:400; color:var(--sanguine-bright); text-align:center; }
+  .exp-tfoot{ display:flex; align-items:center; gap:8px; padding:8px; min-height:46px; }
+  .exp-tname{ flex:1; min-width:0; font-size:12px; font-weight:300; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 4px; }
+  .exp-cap{
+    flex:1; min-width:0; appearance:none; -webkit-appearance:none; font:inherit; font-size:12px; font-weight:300; color:var(--ink);
+    padding:7px 12px; border-radius:999px; background:rgba(255,255,255,0.05); border:1px solid var(--line); outline:none;
+  }
+  .exp-cap::placeholder{ color:var(--ink-faint); }
+  .exp-cap:focus{ border-color:var(--sanguine-bright); }
+  .exp-xbtn{
+    all:unset; cursor:pointer; flex:none; font-size:12px; color:var(--ink-faint); padding:6px 9px; border-radius:999px; border:1px solid var(--line);
+    transition:color .2s var(--ease), border-color .2s var(--ease);
+  }
+  .exp-xbtn:hover{ color:var(--sanguine-bright); border-color:var(--sanguine-bright); }
+  .exp-xbtn:focus-visible{ outline:1px solid var(--sanguine-bright); outline-offset:2px; }
+
   /* scroll + rail polish */
   .rail{ overflow:visible; }
   .rail button{ position:relative; }
@@ -708,6 +857,7 @@
   <button data-target="philosophy" aria-label="Philosophy"></button>
   <button data-target="values" aria-label="Values"></button>
   <button data-target="career" aria-label="Career"></button>
+  <button data-target="experiences" aria-label="Experiences"></button>
   <button data-target="skills" aria-label="Skills"></button>
   <button data-target="community" aria-label="Community"></button>
   <button data-target="certifications" aria-label="Certifications"></button>
@@ -985,6 +1135,48 @@
   </footer>
 
 </div>
+
+<section id="experiences">
+  <span class="kicker">Experiences</span>
+  <p class="section-hint">Write up projects and moments with photos and video. Changes autosave; published posts show up live for viewers.</p>
+  <div class="exp-bar">
+    <button type="button" class="exp-btn" id="exp-new" disabled>New post</button>
+    <span class="exp-status" id="exp-status" role="status" aria-live="polite">Loading…</span>
+  </div>
+  <div class="exp-panel glass" id="exp-list"></div>
+
+  <div class="exp-editor glass" id="exp-editor" hidden>
+    <div class="exp-ed-head">
+      <span class="kicker">Editing post</span>
+      <div class="exp-ed-tools">
+        <span class="exp-status" id="exp-saved" role="status" aria-live="polite"></span>
+        <button type="button" class="exp-switch" id="exp-pub" role="switch" aria-checked="false"><i></i><span id="exp-pub-label">Draft</span></button>
+        <button type="button" class="exp-btn" id="exp-close">Done</button>
+        <button type="button" class="exp-btn" id="exp-del">Delete post</button>
+      </div>
+    </div>
+
+    <div class="exp-f"><span class="exp-label">Title</span>
+      <div class="exp-field exp-title" id="exp-title" contenteditable="true" role="textbox" aria-label="Title" data-single data-placeholder="Post title"></div>
+    </div>
+    <div class="exp-f"><span class="exp-label">Excerpt</span>
+      <div class="exp-field" id="exp-excerpt" contenteditable="true" role="textbox" aria-label="Excerpt" data-single data-placeholder="One or two lines shown in the list"></div>
+    </div>
+    <div class="exp-f"><span class="exp-label">Body</span>
+      <div class="exp-field exp-bodyed" id="exp-body" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Body" data-placeholder="Tell the story."></div>
+    </div>
+    <div class="exp-f"><span class="exp-label">Tags</span>
+      <div class="exp-field" id="exp-tags" contenteditable="true" role="textbox" aria-label="Tags" data-single data-placeholder="Comma-separated, e.g. leadership, field work"></div>
+    </div>
+
+    <div class="exp-f"><span class="exp-label">Media</span>
+      <div class="exp-drop" id="exp-drop" role="button" tabindex="0">Drop images or video here, or tap to choose files</div>
+      <input type="file" id="exp-file" data-role="media" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/avif,video/mp4,video/webm,video/quicktime">
+      <div class="exp-grid" id="exp-grid"></div>
+    </div>
+  </div>
+</section>
+
 </div>
 </main>
 
@@ -1012,9 +1204,14 @@
   const GL_SCALE = 0.5; // the background is soft noise, so half resolution looks identical and scrolls far smoother
   const calmGL = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const parentLite = (function(){ try{ return window.parent.document.documentElement.classList.contains('lite'); }catch(e){ return false; } })();
-  const gl = parentLite ? null : canvas.getContext('webgl'); // lower-end device mode: skip WebGL entirely
+  let gl = null, glTried = false, glOn = false, glRaf = 0, glRender = null;
+  let lightTarget = document.documentElement.getAttribute('data-theme') === 'light' ? 1 : 0, lightNow = lightTarget;
 
-  if (gl) {
+  function setupGL() {
+    if (glTried) return;
+    glTried = true;
+    gl = canvas.getContext('webgl');
+    if (!gl) return;
     const resize = () => {
       canvas.width = Math.max(1, Math.round(window.innerWidth * GL_SCALE));
       canvas.height = Math.max(1, Math.round(window.innerHeight * GL_SCALE));
@@ -1035,6 +1232,7 @@
       uniform vec2 u_resolution;
       uniform float u_time;
       uniform vec2 u_mouse;
+      uniform float u_light;
 
       float random(vec2 st) {
         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
@@ -1078,17 +1276,19 @@
         vec2 r = vec2(fbm(st + 4.0*q + vec2(1.7,9.2) + t*1.5), fbm(st + 4.0*q + vec2(8.3,2.8) - t*1.5));
         float f = fbm(st + 4.0*r + mouseInfluence);
 
-        vec3 color1 = vec3(0.07, 0.05, 0.04);
-        vec3 color2 = vec3(0.30, 0.08, 0.10);
-        vec3 color3 = vec3(0.69, 0.22, 0.25);
+        vec3 color1 = mix(vec3(0.07, 0.05, 0.04), vec3(0.96, 0.93, 0.90), u_light);
+        vec3 color2 = mix(vec3(0.30, 0.08, 0.10), vec3(0.90, 0.76, 0.74), u_light);
+        vec3 color3 = mix(vec3(0.69, 0.22, 0.25), vec3(0.74, 0.34, 0.36), u_light);
 
         vec3 color = mix(color1, color2, f);
         color = mix(color, color3, smoothstep(0.4, 0.8, f) * smoothstep(0.0, 0.5, length(q)));
 
-        color += vec3(0.15, 0.05, 0.05) * mouseInfluence;
+        color += vec3(0.15, 0.05, 0.05) * mouseInfluence * (1.0 - 0.6 * u_light);
 
         float vignette = smoothstep(1.5, 0.2, distance(st, vec2(0.5, 0.5)));
-        color *= 0.4 + vignette * 0.6;
+        vec3 darkMix  = color * (0.4 + vignette * 0.6);
+        vec3 lightMix = mix(color, vec3(0.91, 0.85, 0.80), (1.0 - vignette) * 0.55);
+        color = mix(darkMix, lightMix, u_light);
 
         gl_FragColor = vec4(color, 1.0);
       }
@@ -1119,6 +1319,7 @@
     const u_resolution = gl.getUniformLocation(program, "u_resolution");
     const u_time = gl.getUniformLocation(program, "u_time");
     const u_mouse = gl.getUniformLocation(program, "u_mouse");
+    const u_light = gl.getUniformLocation(program, "u_light");
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
@@ -1133,12 +1334,37 @@
       gl.uniform2f(u_resolution, canvas.width, canvas.height);
       gl.uniform1f(u_time, (performance.now() - startTime) / 1000);
       gl.uniform2f(u_mouse, mouseX * GL_SCALE, mouseY * GL_SCALE);
+      lightNow += (lightTarget - lightNow) * 0.08;
+      gl.uniform1f(u_light, lightNow);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      if(!calmGL) requestAnimationFrame(render);
+      if(!calmGL && glOn) glRaf = requestAnimationFrame(render);
     }
-    if(gl.getProgramParameter(program, gl.LINK_STATUS)) render();
+    glRender = render;
+    if(gl.getProgramParameter(program, gl.LINK_STATUS)){ glOn = true; render(); }
     else console.warn('[shader] link failed');
   }
+  if(!parentLite) setupGL(); // lower-end device mode: skip WebGL entirely
+
+  function applyTheme(light){
+    var de = document.documentElement;
+    if(light) de.setAttribute('data-theme', 'light'); else de.removeAttribute('data-theme');
+    lightTarget = light ? 1 : 0;
+    if(calmGL || !glOn) lightNow = lightTarget;
+    if(calmGL && glOn && glRender) glRender();
+  }
+  function applyLite(on){
+    document.documentElement.classList.toggle('lite', on);
+    if(on){ glOn = false; cancelAnimationFrame(glRaf); return; }
+    if(glRender){ if(!glOn){ glOn = true; glRender(); } }
+    else setupGL();
+  }
+  window.addEventListener('message', function(e){
+    if(e.source !== window.parent) return;
+    var d = e.data;
+    if(!d || typeof d !== 'object') return;
+    if(d.type === 'theme') applyTheme(d.value === 'light');
+    else if(d.type === 'lite') applyLite(!!d.value);
+  });
 
   /* ============== RESUME LOGIC ============== */
   var root = document.getElementById('resume-root');
@@ -1173,15 +1399,32 @@
     return 'Upload error: ' + (e.message || String(err)) + ' | code=' + (e.statusCode || 'n/a') + ' | details=' + det;
   }
   if(dbgBtn) dbgBtn.addEventListener('click', function(){ setDebug(dbgPanel.hidden); });
+  function ownError(e){
+    var f = (e && e.filename) || '';
+    if(e && e.message === 'Script error.' && !e.lineno) return false;
+    if(!f) return true;
+    var here = String(location.href).split('#')[0];
+    if(f.split('#')[0] === here || f === 'about:srcdoc') return true;
+    try{ if(location.origin && location.origin !== 'null' && f.indexOf(location.origin + '/') === 0) return true; }catch(x){}
+    return false;
+  }
+  function ownRejection(r){
+    if(typeof Event !== 'undefined' && r instanceof Event) return false;
+    var m = String((r && r.message) || r || '');
+    if(/failed to fetch|networkerror|load failed|websocket|realtime/i.test(m)) return false;
+    var s = (r && r.stack) ? String(r.stack) : '';
+    if(/https?:\/\//.test(s) && s.indexOf('about:srcdoc') === -1 && s.indexOf(String(location.href).split('#')[0]) === -1) return false;
+    return true;
+  }
   window.addEventListener('error', function(e){
     if(e && e.message && /^ResizeObserver/.test(e.message)) return; // harmless browser notice
     log('Page error: ' + (e && e.message) + ' (' + ((e && e.filename) || '') + ':' + ((e && e.lineno) || '') + ')');
-    showDebug();
+    if(ownError(e)) showDebug();
   });
   window.addEventListener('unhandledrejection', function(e){
     var r = e && e.reason;
     log('Unhandled rejection: ' + ((r && r.message) || String(r)));
-    showDebug();
+    if(ownRejection(r)) showDebug();
   });
   log('Debug panel ready');
 
@@ -1201,6 +1444,83 @@
     return c.innerHTML;
   }
 
+  var KEEP = { BR:1, B:1, STRONG:1, I:1, EM:1, U:1, DIV:1, P:1, SPAN:1 };
+  var DROP = { SCRIPT:1, STYLE:1, IFRAME:1, OBJECT:1, EMBED:1, TEMPLATE:1 };
+  function copyClean(from, to){
+    from.childNodes.forEach(function(n){
+      if(n.nodeType === 3){ to.appendChild(document.createTextNode(n.nodeValue)); }
+      else if(n.nodeType === 1){
+        if(DROP[n.tagName]) return;
+        if(KEEP[n.tagName]){ var el = document.createElement(n.tagName.toLowerCase()); copyClean(n, el); to.appendChild(el); }
+        else copyClean(n, to); // unwrap anything else, keep its text
+      }
+    });
+  }
+  function safeUrl(u, imageOnly){
+    if(!u) return '';
+    return (imageOnly ? /^(data:image\/|https:)/i : /^(https?:|data:)/i).test(u) ? u : '';
+  }
+  function safePath(p){
+    return (typeof p === 'string' && p.length < 300 && /^[A-Za-z0-9_\-.\/]+$/.test(p) && p.indexOf('..') === -1) ? p : '';
+  }
+
+  function applySaved(html){
+    var doc;
+    try{ doc = new DOMParser().parseFromString(html, 'text/html'); }
+    catch(e){ console.warn('[parse]', e); return; }
+    if(!doc || !doc.body) return;
+
+    var srcFields = doc.querySelectorAll('[contenteditable]');
+    var dstFields = root.querySelectorAll('[contenteditable]');
+    var n = Math.min(srcFields.length, dstFields.length);
+    for(var i = 0; i < n; i++){
+      var src = srcFields[i], dst = dstFields[i];
+      dst.textContent = '';
+      copyClean(src, dst);
+      if(!dst.textContent.trim()) dst.textContent = '';
+      if(src.hasAttribute('data-placeholder')) dst.setAttribute('data-placeholder', src.getAttribute('data-placeholder'));
+    }
+
+    var sAv = doc.querySelector('.avatar-upload');
+    var dAv = root.querySelector('.avatar-upload');
+    if(sAv && dAv){
+      var sImg = sAv.querySelector('img');
+      var dImg = dAv.querySelector('img');
+      var avSrc = sImg ? safeUrl(sImg.getAttribute('src'), true) : '';
+      if(dImg && avSrc) dImg.setAttribute('src', avSrc);
+      dAv.classList.toggle('has-photo', sAv.classList.contains('has-photo') && !!avSrc);
+    }
+
+    var sZone = doc.querySelector('#cv-zone');
+    var dZone = root.querySelector('#cv-zone');
+    if(sZone && dZone){
+      var filled = sZone.classList.contains('filled');
+      var cvPath = safePath(sZone.getAttribute('data-cv-path'));
+      var sLabel = sZone.querySelector('#cv-label');
+      var dLabel = dZone.querySelector('#cv-label');
+      var dRemove = dZone.querySelector('.cv-remove');
+      dZone.classList.toggle('filled', filled);
+      if(sLabel && dLabel && (sLabel.textContent || '').trim()) dLabel.textContent = sLabel.textContent;
+      if(cvPath) dZone.setAttribute('data-cv-path', cvPath); else dZone.removeAttribute('data-cv-path');
+      if(dRemove) dRemove.style.display = filled ? 'inline' : 'none';
+    }
+
+    var sChips = doc.querySelectorAll('.cert-file-chip');
+    var dChips = root.querySelectorAll('.cert-file-chip');
+    var m = Math.min(sChips.length, dChips.length);
+    for(var j = 0; j < m; j++){
+      var sLink = sChips[j].querySelector('a');
+      var dLink = dChips[j].querySelector('a');
+      if(!sLink || !dLink) continue;
+      dLink.textContent = sLink.textContent || '';
+      var href = safeUrl(sLink.getAttribute('href'), false);
+      if(href) dLink.setAttribute('href', href); else dLink.removeAttribute('href');
+      var certPath = safePath(sLink.getAttribute('data-cert-path'));
+      if(certPath) dLink.setAttribute('data-cert-path', certPath); else dLink.removeAttribute('data-cert-path');
+      dChips[j].classList.toggle('show', sChips[j].classList.contains('show'));
+    }
+  }
+
   async function loadFromCloud(){
     root.setAttribute('inert', ''); // no typing until the saved copy has arrived
     setHint('Loading…');
@@ -1208,7 +1528,7 @@
       var res = await sb.from(TABLE).select('content').eq('id', ROW_ID).maybeSingle();
       if(res.error){ console.warn('[supabase load]', res.error); setHint('Could not load — reload the page to edit'); return; }
       if(res.data && res.data.content && typeof res.data.content.html === 'string' && res.data.content.html.length){
-        root.innerHTML = res.data.content.html;
+        applySaved(res.data.content.html);
         stripBlobLinks(root);
         setHint('Loaded ✓ — click any field to edit');
       } else {
@@ -1369,11 +1689,52 @@
       var item = input.closest('.cert-item');
       var chip = item.querySelector('.cert-file-chip');
       var link = chip.querySelector('a');
+      if(/^blob:/.test(link.getAttribute('href') || '')) URL.revokeObjectURL(link.getAttribute('href'));
       var url = URL.createObjectURL(file);
       link.href = url;
       link.textContent = file.name;
+      link.removeAttribute('data-cert-path');
       chip.classList.add('show');
-      scheduleSave();
+      (async function(){
+        var mine = link.__certSeq = (link.__certSeq || 0) + 1;
+        var stage = 'start', certPath = '';
+        try{
+          log('Cert selected: ' + file.name + ' size=' + file.size + ' type=' + file.type);
+          if(file.size === 0) throw new Error('file is empty');
+          stage = 'getUser';
+          var u = await sb.auth.getUser();
+          if(u.error) throw u.error;
+          var userId = u.data && u.data.user ? u.data.user.id : null;
+          if(!userId) throw new Error('No signed-in user');
+          stage = 'upload';
+          var ext = (file.name.indexOf('.') !== -1 ? file.name.split('.').pop() : '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
+          certPath = userId + '/certs/' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8) + (ext ? '.' + ext : '');
+          log('Uploading to cvs/' + certPath);
+          var up = await sb.storage.from('cvs').upload(certPath, file, { upsert: false, contentType: file.type || 'application/octet-stream' });
+          if(up.error) throw up.error;
+          log('Upload result: success');
+          if(link.__certSeq !== mine || !chip.classList.contains('show')){
+            try{ await sb.storage.from('cvs').remove([certPath]); }catch(x){}
+            return;
+          }
+          stage = 'attach';
+          link.setAttribute('data-cert-path', certPath);
+          log('data-cert-path set to: ' + certPath + ' — now calling scheduleSave()');
+          scheduleSave();
+        }catch(err){
+          log(errLine(err) + ' | stage=' + stage);
+          if(link.__certSeq === mine){
+            chip.classList.remove('show');
+            if(/^blob:/.test(link.getAttribute('href') || '')) URL.revokeObjectURL(link.getAttribute('href'));
+            link.removeAttribute('href');
+            link.removeAttribute('data-cert-path');
+            link.textContent = '';
+            input.value = '';
+            setHint('Upload failed — see debug panel');
+            showDebug();
+          }
+        }
+      })();
     }
   });
 
@@ -1395,7 +1756,10 @@
       var chip = e.target.closest('.cert-file-chip');
       chip.classList.remove('show');
       var a = chip.querySelector('a');
+      if(/^blob:/.test(a.getAttribute('href') || '')) URL.revokeObjectURL(a.getAttribute('href'));
       a.removeAttribute('href');
+      a.removeAttribute('data-cert-path');
+      a.__certSeq = (a.__certSeq || 0) + 1;
       a.textContent = '';
       var item = e.target.closest('.cert-item');
       var inp2 = item.querySelector('input[type=file]');
@@ -1405,25 +1769,27 @@
   });
 
   /* iOS Safari: open the picker from an explicit tap (a hidden input inside a label is unreliable in srcdoc iframes) */
-  var cvZone = document.getElementById('cv-zone');
-  var cvInput = document.getElementById('cv-input');
-  if(cvZone && cvInput){
-    cvZone.addEventListener('click', function(e){
-      // Let the remove button handle its own click
-      if(e.target.closest('.cv-remove')) return;
+  root.addEventListener('click', function(e){
+    var cvZone = e.target.closest ? e.target.closest('#cv-zone') : null;
+    var cvInput = document.getElementById('cv-input');
+    if(!cvZone || !cvInput) return;
+    // Let the remove button handle its own click
+    if(e.target.closest('.cv-remove')) return;
+    e.preventDefault();
+    cvInput.click();
+    log('CV picker opened (input.click called)');
+  });
+  root.addEventListener('keydown', function(e){
+    var cvZone = e.target.closest ? e.target.closest('#cv-zone') : null;
+    var cvInput = document.getElementById('cv-input');
+    if(!cvZone || !cvInput) return;
+    if(e.target.closest('.cv-remove')) return;
+    if(e.key === 'Enter' || e.key === ' '){
       e.preventDefault();
       cvInput.click();
       log('CV picker opened (input.click called)');
-    });
-    cvZone.addEventListener('keydown', function(e){
-      if(e.target.closest('.cv-remove')) return;
-      if(e.key === 'Enter' || e.key === ' '){
-        e.preventDefault();
-        cvInput.click();
-        log('CV picker opened (input.click called)');
-      }
-    });
-  }
+    }
+  });
 
   document.getElementById('btn-print').addEventListener('click', function(){ window.print(); });
 
@@ -1459,6 +1825,8 @@
     /* live query on purpose: the page markup can be replaced after load, which orphans a saved list */
     var secs = document.querySelectorAll('main section[id]');
     if(!secs.length) return;
+    /* visual order: #experiences sits after #career on screen but later in the DOM */
+    secs = Array.prototype.slice.call(secs).sort(function(a, b){ return a.getBoundingClientRect().top - b.getBoundingClientRect().top; });
     var current = secs[0].id;
     var line = window.innerHeight * 0.4;
     for(var i = 0; i < secs.length; i++){
@@ -1484,6 +1852,725 @@
   window.addEventListener('resize', queueActive);
   setActive();
 
+  /* ============== EXPERIENCES (posts + media) ============== */
+  /* Own state, own timers, own table (posts). Nothing in here touches the résumé save path above. */
+  if(parentLite) document.documentElement.classList.add('lite'); // new panels drop backdrop blur in lower-end device mode
+
+  function initExperiences(){
+    var PTABLE = 'posts', BUCKET = 'media';
+    var MAX_BYTES = 50 * 1024 * 1024; // the bucket's per-file limit
+    var IMG_MAX = 1920;               // longest edge after shrinkImage()
+    var EXT_TYPE = { jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', webp:'image/webp', gif:'image/gif', avif:'image/avif', mp4:'video/mp4', webm:'video/webm', mov:'video/quicktime' };
+    var OK_TYPE = { 'image/jpeg':1, 'image/png':1, 'image/webp':1, 'image/gif':1, 'image/avif':1, 'video/mp4':1, 'video/webm':1, 'video/quicktime':1 };
+
+    function g(id){ return document.getElementById(id); }
+    var xList = g('exp-list'), xEditor = g('exp-editor'), xStatus = g('exp-status'), xSaved = g('exp-saved');
+    var xNew = g('exp-new'), xClose = g('exp-close'), xDel = g('exp-del');
+    var xTitle = g('exp-title'), xExcerpt = g('exp-excerpt'), xBody = g('exp-body'), xTags = g('exp-tags');
+    var xPub = g('exp-pub'), xPubLabel = g('exp-pub-label');
+    var xDrop = g('exp-drop'), xFile = g('exp-file'), xGrid = g('exp-grid');
+    if(!xList || !xEditor || !xGrid) return;
+
+    var posts = [];            // rows as last saved / loaded
+    var cur = null, sel = null; // working copy of the post being edited, and its id
+    var xReady = false;        // saving stays off until the list has loaded
+    var xPending = false, xSaving = false, xDirty = false, xTimer = 0, xHintTimer = 0;
+    var removals = [];         // storage paths to delete once the post row no longer references them
+    var uploads = [], upSeq = 0, upChain = Promise.resolve();
+    var previews = new Map();  // path -> blob: URL of a file uploaded this session (no signed URL needed)
+    var urlCache = new Map();  // path -> { url, exp } (signed URLs live only here, never in the DOM's data- attributes)
+    var urlPending = new Map();// path -> in-flight signing job
+
+    function setStatus(t){ xStatus.textContent = t || ''; }
+    function setSaved(t){ xSaved.textContent = t || ''; }
+    function jd(err){ try{ return JSON.stringify(err); }catch(x){ return String(err); } }
+    function msgOf(err){ return err && err.message ? err.message : String(err); }
+    function oneLine(s){ return String(s || '').replace(/\s+/g, ' ').trim(); }
+    function fmtDate(iso){
+      try{ return new Date(iso).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }); }catch(e){ return ''; }
+    }
+
+    /* same allowlist as the viewer's copyClean: only plain text, line breaks and basic emphasis survive */
+    var KEEP = { BR:1, B:1, STRONG:1, I:1, EM:1, U:1, DIV:1, P:1, SPAN:1 };
+    var DROP = { SCRIPT:1, STYLE:1, IFRAME:1, OBJECT:1, EMBED:1, TEMPLATE:1 };
+    function copyClean(from, to){
+      from.childNodes.forEach(function(n){
+        if(n.nodeType === 3){ to.appendChild(document.createTextNode(n.nodeValue)); }
+        else if(n.nodeType === 1){
+          if(DROP[n.tagName]) return;
+          if(KEEP[n.tagName]){ var el = document.createElement(n.tagName.toLowerCase()); copyClean(n, el); to.appendChild(el); }
+          else copyClean(n, to);
+        }
+      });
+    }
+    function setBody(html){
+      xBody.textContent = '';
+      var doc;
+      try{ doc = new DOMParser().parseFromString('<!DOCTYPE html><body>' + (html || ''), 'text/html'); }catch(e){ return; }
+      if(doc && doc.body) copyClean(doc.body, xBody);
+    }
+
+    /* ---------- signed URLs (batched, cached by path) ---------- */
+    function cachedUrl(path){
+      var c = urlCache.get(path);
+      return c && c.exp - Date.now() > 60000 ? c.url : '';
+    }
+    function signMany(paths){
+      var need = [], waits = [];
+      paths.forEach(function(p){
+        if(!p || cachedUrl(p)) return;
+        if(urlPending.has(p)){ waits.push(urlPending.get(p)); return; }
+        if(need.indexOf(p) === -1) need.push(p);
+      });
+      if(need.length){
+        var job = (async function(){
+          log('createSignedUrl called for path: ' + need.join(', '));
+          try{
+            var r = await sb.storage.from(BUCKET).createSignedUrls(need, 3600);
+            if(r.error) throw r.error;
+            var okN = 0;
+            (r.data || []).forEach(function(row){
+              if(row && row.signedUrl){ urlCache.set(row.path, { url: row.signedUrl, exp: Date.now() + 3600 * 1000 }); okN++; }
+              else if(row){ log('Signed URL error: ' + (row.error || 'no URL returned') + ' | path=' + row.path); }
+            });
+            log('Signed URL result: ok (' + okN + '/' + need.length + ')');
+          }catch(err){
+            log('Signed URL error: ' + msgOf(err) + ' | details=' + jd(err) + ' — retrying one by one');
+            await Promise.all(need.map(function(p){
+              return sb.storage.from(BUCKET).createSignedUrl(p, 3600).then(function(r){
+                if(r.error || !r.data || !r.data.signedUrl) throw (r.error || new Error('no signed URL returned'));
+                urlCache.set(p, { url: r.data.signedUrl, exp: Date.now() + 3600 * 1000 });
+                log('Signed URL result: ok');
+              }).catch(function(e2){
+                log('Signed URL error: ' + msgOf(e2) + ' | details=' + jd(e2) + ' | path=' + p);
+                showDebug();
+              });
+            }));
+          }
+        })();
+        need.forEach(function(p){ urlPending.set(p, job); });
+        var clear = function(){ need.forEach(function(p){ if(urlPending.get(p) === job) urlPending.delete(p); }); };
+        job.then(clear, clear);
+        waits.push(job);
+      }
+      return Promise.all(waits);
+    }
+    function srcFor(path, isVideo){
+      var u = previews.get(path) || cachedUrl(path);
+      return u ? (isVideo ? u + '#t=0.1' : u) : '';
+    }
+    function applySrcs(box){
+      box.querySelectorAll('[data-path]').forEach(function(el){
+        if(el.getAttribute('src')) return;
+        var s = srcFor(el.getAttribute('data-path'), el.tagName === 'VIDEO');
+        if(s) el.src = s;
+      });
+    }
+    function missingPaths(box){
+      var need = [];
+      box.querySelectorAll('[data-path]').forEach(function(el){ if(!el.getAttribute('src')) need.push(el.getAttribute('data-path')); });
+      return need;
+    }
+    function fill(box){
+      applySrcs(box);
+      var need = missingPaths(box);
+      if(need.length) signMany(need).then(function(){ applySrcs(box); });
+    }
+    /* a signed URL that expired while the page stayed open: sign once more and retry once */
+    function retryOnce(el){
+      el.addEventListener('error', function(){
+        if(el.__retried) return;
+        el.__retried = true;
+        var p = el.getAttribute('data-path');
+        if(!p || previews.has(p)) return;
+        urlCache.delete(p);
+        signMany([p]).then(function(){ var s = srcFor(p, el.tagName === 'VIDEO'); if(s) el.src = s; });
+      });
+    }
+    function clearPreviews(){
+      previews.forEach(function(u){ try{ URL.revokeObjectURL(u); }catch(e){} });
+      previews.clear();
+    }
+
+    /* ---------- post helpers ---------- */
+    function cleanEntry(en){
+      var o = { type: en.type === 'video' ? 'video' : 'image', path: String(en.path || ''), caption: String(en.caption || '') };
+      if(en.width > 0) o.width = en.width;
+      if(en.height > 0) o.height = en.height;
+      return o;
+    }
+    function clonePost(p){
+      return {
+        id: p.id, title: p.title || '', excerpt: p.excerpt || '', body: p.body || '', cover_path: p.cover_path || null,
+        media: (Array.isArray(p.media) ? p.media : []).filter(function(m){ return m && m.path; }).map(cleanEntry),
+        tags: Array.isArray(p.tags) ? p.tags.slice() : [], published: !!p.published, created_at: p.created_at
+      };
+    }
+    function coverOf(media){
+      for(var i = 0; i < media.length; i++){ if(media[i].type === 'image') return media[i].path; }
+      return null;
+    }
+    function findPost(id){
+      for(var i = 0; i < posts.length; i++){ if(posts[i].id === id) return posts[i]; }
+      return null;
+    }
+    function parseTags(s){
+      var out = [], seen = {};
+      String(s || '').split(/[,\n]/).forEach(function(t){
+        t = t.replace(/\s+/g, ' ').trim().slice(0, 32);
+        var k = t.toLowerCase();
+        if(t && !seen[k] && out.length < 12){ seen[k] = 1; out.push(t); }
+      });
+      return out;
+    }
+    function readEditor(){
+      if(!cur) return;
+      cur.title = oneLine(xTitle.textContent);
+      cur.excerpt = oneLine(xExcerpt.textContent);
+      cur.body = (xBody.textContent || '').trim() ? xBody.innerHTML : '';
+      cur.tags = parseTags(xTags.textContent);
+    }
+    function setPubUI(){
+      var on = !!(cur && cur.published);
+      xPub.setAttribute('aria-checked', String(on));
+      xPubLabel.textContent = on ? 'Published' : 'Draft';
+    }
+
+    /* ---------- list ---------- */
+    function listRow(p){
+      var row = document.createElement('div');
+      row.className = 'exp-item' + (p.id === sel ? ' sel' : '');
+      row.setAttribute('role', 'button'); row.tabIndex = 0; row.setAttribute('data-id', p.id);
+      var th = document.createElement('div'); th.className = 'exp-thumb';
+      if(p.cover_path){
+        var im = document.createElement('img'); im.loading = 'lazy'; im.alt = '';
+        im.setAttribute('data-path', p.cover_path); retryOnce(im); th.appendChild(im);
+      } else { th.textContent = 'no cover'; }
+      var mid = document.createElement('div');
+      var t = document.createElement('div'); t.className = 'exp-t'; t.textContent = p.title || 'Untitled';
+      var m = document.createElement('div'); m.className = 'exp-m'; m.textContent = fmtDate(p.created_at);
+      mid.appendChild(t); mid.appendChild(m);
+      var pill = document.createElement('span'); pill.className = 'exp-pill' + (p.published ? ' on' : '');
+      pill.textContent = p.published ? 'Published' : 'Draft';
+      row.appendChild(th); row.appendChild(mid); row.appendChild(pill);
+      return row;
+    }
+    function renderList(){
+      xList.textContent = '';
+      if(!posts.length){
+        var em = document.createElement('div'); em.className = 'exp-empty';
+        em.textContent = xReady ? 'No experiences yet. Use “New post” to add the first one.' : 'Loading…';
+        xList.appendChild(em);
+        return;
+      }
+      posts.forEach(function(p){ xList.appendChild(listRow(p)); });
+      fill(xList);
+    }
+    function syncRow(p){
+      var c = clonePost(p);
+      for(var i = 0; i < posts.length; i++){ if(posts[i].id === c.id){ c.created_at = posts[i].created_at; posts[i] = c; return; } }
+    }
+
+    /* ---------- media grid ---------- */
+    function mkBtn(label, aria){
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'exp-xbtn'; b.textContent = label; b.setAttribute('aria-label', aria);
+      return b;
+    }
+    function mediaTile(en, i, isCover){
+      var t = document.createElement('div'); t.className = 'exp-tile';
+      var box = document.createElement('div'); box.className = 'exp-tbox';
+      var el;
+      if(en.type === 'video'){ el = document.createElement('video'); el.preload = 'metadata'; el.muted = true; el.setAttribute('playsinline', ''); }
+      else { el = document.createElement('img'); el.loading = 'lazy'; el.alt = en.caption || ''; }
+      el.setAttribute('data-path', en.path); retryOnce(el);
+      box.appendChild(el);
+      if(en.type === 'video' || isCover){
+        var b = document.createElement('span'); b.className = 'exp-badge'; b.textContent = en.type === 'video' ? 'Video' : 'Cover'; box.appendChild(b);
+      }
+      var foot = document.createElement('div'); foot.className = 'exp-tfoot';
+      var cap = document.createElement('input'); cap.type = 'text'; cap.className = 'exp-cap'; cap.maxLength = 200;
+      cap.placeholder = 'Caption'; cap.setAttribute('aria-label', 'Caption'); cap.setAttribute('data-i', String(i)); cap.value = en.caption || '';
+      var rm = mkBtn('✕', 'Remove'); rm.setAttribute('data-i', String(i));
+      foot.appendChild(cap); foot.appendChild(rm);
+      t.appendChild(box); t.appendChild(foot);
+      return t;
+    }
+    var UP_TEXT = { queued:'Queued…', prep:'Preparing…', uploading:'Uploading…' };
+    function upTile(u){
+      var t = document.createElement('div'); t.className = 'exp-tile'; t.setAttribute('data-up', String(u.id));
+      var box = document.createElement('div'); box.className = 'exp-tbox';
+      if(u.state === 'error'){
+        var er = document.createElement('div'); er.className = 'exp-err'; er.textContent = u.error || 'Upload failed'; box.appendChild(er);
+      } else {
+        var pc = document.createElement('span'); pc.className = 'exp-pct'; pc.textContent = u.state === 'uploading' ? u.pct + '%' : (UP_TEXT[u.state] || ''); box.appendChild(pc);
+        var pr = document.createElement('div'); pr.className = 'exp-prog'; var bar = document.createElement('i'); bar.style.width = u.pct + '%'; pr.appendChild(bar); box.appendChild(pr);
+      }
+      var foot = document.createElement('div'); foot.className = 'exp-tfoot';
+      var nm = document.createElement('span'); nm.className = 'exp-tname'; nm.textContent = u.name;
+      var x = mkBtn(u.state === 'error' ? 'Dismiss' : 'Cancel', u.state === 'error' ? 'Dismiss' : 'Cancel upload'); x.setAttribute('data-u', String(u.id));
+      foot.appendChild(nm); foot.appendChild(x);
+      t.appendChild(box); t.appendChild(foot);
+      return t;
+    }
+    function renderGrid(){
+      var act = document.activeElement, keep = null;
+      if(act && act.classList && act.classList.contains('exp-cap') && xGrid.contains(act)){
+        keep = { i: act.getAttribute('data-i'), s: act.selectionStart, e: act.selectionEnd };
+      }
+      xGrid.textContent = '';
+      var media = cur ? cur.media : [];
+      var cover = coverOf(media);
+      media.forEach(function(en, i){ xGrid.appendChild(mediaTile(en, i, en.path === cover)); });
+      uploads.forEach(function(u){ xGrid.appendChild(upTile(u)); });
+      fill(xGrid);
+      if(keep){
+        var el = xGrid.querySelector('.exp-cap[data-i="' + keep.i + '"]');
+        if(el){ el.focus(); try{ el.setSelectionRange(keep.s, keep.e); }catch(e){} }
+      }
+    }
+    function paintProgress(u){
+      var t = xGrid.querySelector('[data-up="' + u.id + '"]');
+      if(!t) return;
+      var bar = t.querySelector('.exp-prog i'), pc = t.querySelector('.exp-pct');
+      if(bar) bar.style.width = u.pct + '%';
+      if(pc) pc.textContent = u.pct + '%';
+    }
+    function uploadsBusy(){
+      return uploads.some(function(u){ return u.state === 'queued' || u.state === 'prep' || u.state === 'uploading'; });
+    }
+
+    /* ---------- autosave to posts (same debounce pattern as scheduleSave, separate path) ---------- */
+    function scheduleExpSave(){
+      if(!xReady || !cur) return;
+      clearTimeout(xHintTimer);
+      xPending = true;
+      setSaved('Saving…');
+      clearTimeout(xTimer);
+      xTimer = setTimeout(doExpSave, 700);
+    }
+    async function purge(paths){
+      if(!paths.length) return;
+      log('Removing from ' + BUCKET + ': ' + paths.join(', '));
+      try{
+        var r = await sb.storage.from(BUCKET).remove(paths);
+        if(r.error) throw r.error;
+        var n = (r.data || []).length;
+        if(n < paths.length){ log('Remove error: only ' + n + ' of ' + paths.length + ' file(s) removed (check storage policies)'); showDebug(); }
+        else log('Remove result: success');
+      }catch(err){
+        log('Remove error: ' + msgOf(err) + ' | details=' + jd(err)); showDebug();
+      }
+    }
+    async function doExpSave(){
+      if(!xReady || !cur) return;
+      if(xSaving){ xDirty = true; return; } // one save at a time, newest edits go last
+      xSaving = true; xDirty = false; xPending = false;
+      var p = cur;
+      try{
+        readEditor();
+        p.cover_path = coverOf(p.media);
+        var row = {
+          id: p.id, title: p.title, excerpt: p.excerpt, body: p.body, cover_path: p.cover_path,
+          media: p.media.map(cleanEntry), tags: p.tags, published: p.published, updated_at: new Date().toISOString()
+        };
+        var saved = row.media.map(function(m){ return m.path; });
+        if(row.cover_path) saved.push(row.cover_path);
+        var res = await sb.from(PTABLE).upsert(row, { onConflict: 'id' });
+        if(res.error){
+          log('Save error (posts): ' + res.error.message + ' | details=' + jd(res.error)); showDebug();
+          setSaved('Save failed — see debug panel');
+          return;
+        }
+        syncRow(p);
+        renderList();
+        /* delete removed files only once no saved row references them */
+        var rm = removals.filter(function(x){ return saved.indexOf(x) === -1; });
+        removals = removals.filter(function(x){ return saved.indexOf(x) !== -1; });
+        if(rm.length) purge(rm);
+        if(xDirty) setSaved('Saving…');
+        else { setSaved('Saved ✓'); xHintTimer = setTimeout(function(){ setSaved(''); }, 1500); }
+      }catch(err){
+        log('Save error (posts): ' + msgOf(err) + ' | details=' + jd(err)); showDebug();
+        setSaved('Save failed — see debug panel');
+      }finally{
+        xSaving = false;
+        if(xDirty) doExpSave();
+      }
+    }
+    function waitSaves(){
+      return new Promise(function(res){ (function chk(){ if(!xSaving && !xDirty) res(); else setTimeout(chk, 60); })(); });
+    }
+    async function flushExp(){
+      if(!cur) return;
+      if(xPending){ clearTimeout(xTimer); await doExpSave(); }
+      await waitSaves();
+    }
+
+    /* ---------- open / close / new ---------- */
+    function openPost(p){
+      disarmDel(); clearPreviews(); uploads = [];
+      sel = p.id; cur = clonePost(p);
+      xTitle.textContent = cur.title;
+      xExcerpt.textContent = cur.excerpt;
+      setBody(cur.body);
+      xTags.textContent = cur.tags.join(', ');
+      setPubUI();
+      xEditor.hidden = false;
+      setSaved(''); setStatus('');
+      renderGrid(); renderList();
+      xEditor.scrollIntoView({ behavior: calmMotion ? 'auto' : 'smooth', block: 'nearest' });
+    }
+    async function selectPost(id){
+      if(cur && cur.id === id) return;
+      if(uploadsBusy()){ setStatus('Uploads in progress — wait for them to finish first.'); return; }
+      await flushExp();
+      var p = findPost(id);
+      if(p) openPost(p);
+    }
+    async function closeEditor(){
+      if(uploadsBusy()){ setStatus('Uploads in progress — wait for them to finish first.'); return; }
+      await flushExp();
+      cur = null; sel = null; uploads = []; clearPreviews();
+      disarmDel(); xEditor.hidden = true; setSaved(''); setStatus('');
+      renderList();
+    }
+    xList.addEventListener('click', function(e){
+      var row = e.target.closest ? e.target.closest('.exp-item') : null;
+      if(row) selectPost(row.getAttribute('data-id'));
+    });
+    xList.addEventListener('keydown', function(e){
+      if(e.key !== 'Enter' && e.key !== ' ') return;
+      var row = e.target.closest ? e.target.closest('.exp-item') : null;
+      if(!row) return;
+      e.preventDefault();
+      selectPost(row.getAttribute('data-id'));
+    });
+    xClose.addEventListener('click', function(){ closeEditor(); });
+    xNew.addEventListener('click', async function(){
+      if(!xReady || xNew.disabled) return;
+      if(uploadsBusy()){ setStatus('Uploads in progress — wait for them to finish first.'); return; }
+      xNew.disabled = true;
+      try{
+        await flushExp();
+        var r = await sb.from(PTABLE).insert({ title: '', published: false }).select().single();
+        if(r.error) throw r.error;
+        if(!(r.data && r.data.id && r.data.created_at)){
+          log('Save error (posts): insert returned an incomplete row | id=' + (r.data && r.data.id) + ' created_at=' + (r.data && r.data.created_at));
+          showDebug();
+          setStatus('Could not create a post — see debug panel');
+          return;
+        }
+        posts.unshift(r.data);
+        openPost(r.data);
+        xTitle.focus();
+        log('Post created: ' + r.data.id);
+      }catch(err){
+        log('Save error (posts): ' + msgOf(err) + ' | details=' + jd(err)); showDebug();
+        setStatus('Could not create a post — see debug panel');
+      }finally{
+        xNew.disabled = false;
+      }
+    });
+
+    /* ---------- editing ---------- */
+    xEditor.addEventListener('input', function(e){
+      if(!cur) return;
+      var t = e.target;
+      if(t.classList && t.classList.contains('exp-cap')){
+        var en = cur.media[+t.getAttribute('data-i')];
+        if(en) en.caption = t.value;
+      } else {
+        readEditor();
+        var tt = xList.querySelector('.exp-item[data-id="' + cur.id + '"] .exp-t');
+        if(tt) tt.textContent = cur.title || 'Untitled';
+      }
+      scheduleExpSave();
+    });
+    xEditor.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && e.target.hasAttribute && e.target.hasAttribute('data-single')) e.preventDefault();
+    });
+    /* paste as plain text, same rule as the résumé */
+    xEditor.addEventListener('paste', function(e){
+      var t = e.target && e.target.closest ? e.target.closest('[contenteditable]') : null;
+      if(!t) return;
+      e.preventDefault();
+      var text = (e.clipboardData || window.clipboardData).getData('text/plain');
+      if(text && t.hasAttribute('data-single')) text = text.replace(/\s*[\r\n]+\s*/g, ' ');
+      if(text) document.execCommand('insertText', false, text);
+    });
+    xPub.addEventListener('click', function(){
+      if(!cur) return;
+      cur.published = !cur.published;
+      setPubUI();
+      scheduleExpSave();
+    });
+    xGrid.addEventListener('click', function(e){
+      var b = e.target.closest ? e.target.closest('.exp-xbtn') : null;
+      if(!b || !cur) return;
+      if(b.hasAttribute('data-u')){ cancelUpload(+b.getAttribute('data-u')); return; }
+      var i = +b.getAttribute('data-i'), en = cur.media[i];
+      if(!en) return;
+      cur.media.splice(i, 1);
+      removals.push(en.path);
+      var pv = previews.get(en.path);
+      if(pv){ try{ URL.revokeObjectURL(pv); }catch(x){} previews.delete(en.path); }
+      log('Media removed: ' + en.path);
+      renderGrid();
+      scheduleExpSave();
+    });
+
+    /* ---------- uploads ---------- */
+    function cancelUpload(id){
+      for(var i = 0; i < uploads.length; i++){
+        if(uploads[i].id === id){
+          var u = uploads[i];
+          u.dead = true;
+          if(u.xhr){ try{ u.xhr.abort(); }catch(e){} }
+          uploads.splice(i, 1);
+          break;
+        }
+      }
+      renderGrid();
+    }
+    function safeName(n){
+      var s = String(n || 'file').replace(/[^A-Za-z0-9._-]+/g, '_').replace(/^\.+/, '');
+      return (s || 'file').slice(-80);
+    }
+    function swapExt(name, ext){
+      var i = name.lastIndexOf('.');
+      return (i > 0 ? name.slice(0, i) : name) + '.' + ext;
+    }
+    function dataUrlToBlob(d){
+      var i = d.indexOf(','), mime = d.slice(5, i).split(';')[0];
+      var bin = atob(d.slice(i + 1)), n = bin.length, arr = new Uint8Array(n);
+      for(var k = 0; k < n; k++) arr[k] = bin.charCodeAt(k);
+      return new Blob([arr], { type: mime });
+    }
+    function getDims(blob, isVideo){
+      return new Promise(function(res){
+        var url = URL.createObjectURL(blob), done = false;
+        function fin(v){ if(done) return; done = true; try{ URL.revokeObjectURL(url); }catch(e){} res(v); }
+        if(isVideo){
+          var v = document.createElement('video'); v.preload = 'metadata'; v.muted = true;
+          v.onloadedmetadata = function(){ fin(v.videoWidth ? { w: v.videoWidth, h: v.videoHeight } : null); };
+          v.onerror = function(){ fin(null); };
+          v.src = url;
+        } else {
+          var im = new Image();
+          im.onload = function(){ fin({ w: im.naturalWidth, h: im.naturalHeight }); };
+          im.onerror = function(){ fin(null); };
+          im.src = url;
+        }
+        setTimeout(function(){ fin(null); }, 4000);
+      });
+    }
+    /* supabase-js has no upload progress callback, so the file goes to the storage REST endpoint
+       with the shared client's session token, which is what supabase-js does under the hood */
+    function xhrUpload(path, blob, token, u){
+      return new Promise(function(resolve, reject){
+        var xhr = new XMLHttpRequest(), lastStep = -1;
+        u.xhr = xhr;
+        xhr.open('POST', SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + path.split('/').map(encodeURIComponent).join('/'));
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.setRequestHeader('apikey', SUPABASE_ANON_KEY);
+        xhr.setRequestHeader('x-upsert', 'false');
+        xhr.upload.onprogress = function(e){
+          if(!e.lengthComputable) return;
+          u.pct = Math.round(e.loaded / e.total * 100);
+          paintProgress(u);
+          var step = Math.floor(u.pct / 25) * 25;
+          if(step !== lastStep){ lastStep = step; log('Upload progress: ' + u.name + ' ' + u.pct + '%'); }
+        };
+        xhr.onload = function(){
+          if(xhr.status >= 200 && xhr.status < 300){ resolve(); return; }
+          var m = '';
+          try{ var j = JSON.parse(xhr.responseText); m = j.message || j.error || ''; }catch(e){}
+          var er = new Error(m || ('HTTP ' + xhr.status)); er.statusCode = xhr.status; reject(er);
+        };
+        xhr.onerror = function(){ reject(new Error('Network error')); };
+        xhr.onabort = function(){ var er = new Error('Upload cancelled'); er.cancelled = true; reject(er); };
+        var fd = new FormData();
+        fd.append('cacheControl', '3600');
+        fd.append('', blob, path.split('/').pop());
+        xhr.send(fd);
+      });
+    }
+    async function runUpload(u, file, postId){
+      var stage = 'start';
+      try{
+        if(u.dead) return;
+        u.state = 'prep'; renderGrid();
+        var type = (file.type || '').toLowerCase();
+        var ext = (file.name.indexOf('.') !== -1 ? file.name.split('.').pop() : '').toLowerCase();
+        if(!type) type = EXT_TYPE[ext] || '';
+        log('File selected: ' + file.name + ' size=' + file.size + ' type=' + (type || 'unknown'));
+        var bad = '';
+        if(!OK_TYPE[type]) bad = 'unsupported file type';
+        else if(file.size === 0) bad = 'file is empty';
+        var isVideo = type.indexOf('video/') === 0;
+        if(!bad && isVideo && file.size > MAX_BYTES) bad = 'video is larger than the 50 MB bucket limit';
+        if(bad){
+          log('Validation failed: ' + bad);
+          throw new Error(bad.charAt(0).toUpperCase() + bad.slice(1));
+        }
+        log('Validation passed');
+
+        stage = 'prepare';
+        var blob = file, outName = file.name;
+        if(!isVideo && type !== 'image/gif'){ // videos skip shrinking; GIFs keep their animation
+          var dataUrl = await new Promise(function(res){ shrinkImage(file, IMG_MAX, res); });
+          if(dataUrl){
+            blob = dataUrlToBlob(dataUrl);
+            outName = swapExt(file.name, blob.type === 'image/webp' ? 'webp' : 'jpg');
+            log('Image shrunk: ' + file.size + ' -> ' + blob.size + ' bytes');
+          } else {
+            log('Image shrink failed — uploading the original');
+          }
+        }
+        if(blob.size > MAX_BYTES) throw new Error('File is larger than the 50 MB bucket limit');
+        if(u.dead) return;
+
+        stage = 'getSession';
+        var s = await sb.auth.getSession();
+        var sess = s.data && s.data.session;
+        if(s.error) throw s.error;
+        if(!sess || !sess.access_token || !sess.user) throw new Error('No signed-in user');
+        log('User id: ' + sess.user.id);
+
+        stage = 'upload';
+        var path = sess.user.id + '/' + postId + '/' + Date.now().toString(36) + '-' + safeName(outName);
+        log('Uploading to ' + BUCKET + '/' + path);
+        u.state = 'uploading'; u.pct = 0; renderGrid();
+        await xhrUpload(path, blob, sess.access_token, u);
+        log('Upload result: success');
+
+        stage = 'attach';
+        var dims = await getDims(blob, isVideo);
+        if(u.dead || !cur || cur.id !== postId){
+          log('Upload finished but the post is no longer open — removing the file');
+          purge([path]);
+          return;
+        }
+        var entry = { type: isVideo ? 'video' : 'image', path: path, caption: '' };
+        if(dims){ entry.width = dims.w; entry.height = dims.h; }
+        previews.set(path, URL.createObjectURL(blob));
+        cur.media.push(entry);
+        var ix = uploads.indexOf(u); if(ix !== -1) uploads.splice(ix, 1);
+        renderGrid();
+        scheduleExpSave();
+      }catch(err){
+        if(err && err.cancelled){ log('Upload cancelled: ' + file.name); }
+        else if(!u.dead){
+          log(errLine(err) + ' | stage=' + stage);
+          showDebug();
+          u.state = 'error'; u.error = msgOf(err);
+          renderGrid();
+        }
+      }finally{
+        u.xhr = null;
+      }
+    }
+    function queueFile(file){
+      if(!cur) return;
+      var u = { id: ++upSeq, name: file.name, pct: 0, state: 'queued', error: '', xhr: null, dead: false };
+      uploads.push(u);
+      renderGrid();
+      var pid = cur.id;
+      upChain = upChain.then(function(){ return runUpload(u, file, pid); });
+    }
+    function queueFiles(list){
+      Array.prototype.slice.call(list || []).forEach(queueFile);
+    }
+    xFile.addEventListener('change', function(){
+      var files = Array.prototype.slice.call(xFile.files || []);
+      xFile.value = ''; // lets the same file be picked again
+      files.forEach(queueFile);
+    });
+    /* explicit tap handler: a hidden input inside a label is unreliable in srcdoc iframes on iOS Safari */
+    function openPicker(){ xFile.click(); log('Media picker opened (input.click called)'); }
+    xDrop.addEventListener('click', openPicker);
+    xDrop.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPicker(); }
+    });
+    ['dragenter', 'dragover'].forEach(function(n){
+      xDrop.addEventListener(n, function(e){ e.preventDefault(); xDrop.classList.add('over'); });
+    });
+    ['dragleave', 'drop'].forEach(function(n){
+      xDrop.addEventListener(n, function(e){ e.preventDefault(); xDrop.classList.remove('over'); });
+    });
+    xDrop.addEventListener('drop', function(e){ queueFiles(e.dataTransfer && e.dataTransfer.files); });
+
+    /* ---------- delete (two-click confirm, same pattern as Reset) ---------- */
+    var delArmed = false, delTimer = 0;
+    function disarmDel(){ delArmed = false; clearTimeout(delTimer); xDel.textContent = 'Delete post'; }
+    xDel.addEventListener('click', async function(){
+      if(!cur) return;
+      if(!delArmed){
+        delArmed = true; xDel.textContent = 'Click again to confirm';
+        setStatus('Delete removes the post and its media for everyone');
+        delTimer = setTimeout(function(){ disarmDel(); setStatus(''); }, 4000);
+        return;
+      }
+      disarmDel(); setStatus('');
+      var p = cur, id = p.id;
+      clearTimeout(xTimer); xPending = false;
+      uploads.forEach(function(u){ u.dead = true; if(u.xhr){ try{ u.xhr.abort(); }catch(e){} } });
+      uploads = [];
+      cur = null; // no autosave while deleting
+      await waitSaves();
+      setSaved('Deleting…');
+      var stored = findPost(id);
+      var paths = [];
+      function add(x){ if(x && paths.indexOf(x) === -1) paths.push(x); }
+      p.media.forEach(function(m){ add(m.path); });
+      add(p.cover_path);
+      if(stored){ (stored.media || []).forEach(function(m){ add(m.path); }); add(stored.cover_path); }
+      removals.forEach(add);
+      try{
+        var r = await sb.from(PTABLE).delete().eq('id', id).select('id');
+        if(r.error) throw r.error;
+        if(!r.data || !r.data.length) throw new Error('nothing was deleted (check policies)');
+      }catch(err){
+        log('Delete error (posts): ' + msgOf(err) + ' | details=' + jd(err)); showDebug();
+        cur = p; sel = id; setSaved('Delete failed — see debug panel');
+        return;
+      }
+      log('Post deleted: ' + id);
+      await purge(paths);
+      removals = [];
+      posts = posts.filter(function(x){ return x.id !== id; });
+      sel = null; clearPreviews(); xEditor.hidden = true; setSaved('');
+      renderList();
+    });
+
+    /* ---------- load ---------- */
+    async function loadPosts(){
+      setStatus('Loading…');
+      try{
+        var r = await sb.from(PTABLE).select('*').order('created_at', { ascending: false });
+        if(r.error){
+          log('Load error (posts): ' + r.error.message + ' | details=' + jd(r.error)); showDebug();
+          setStatus('Could not load experiences — see debug panel');
+          renderList();
+          return;
+        }
+        posts = r.data || [];
+        xReady = true; xNew.disabled = false;
+        setStatus('');
+        log('Posts loaded: ' + posts.length);
+        renderList();
+      }catch(err){
+        log('Load error (posts): ' + msgOf(err)); showDebug();
+        setStatus('Offline — reload the page to edit experiences');
+        renderList();
+      }
+    }
+    renderList();
+    setTimeout(loadPosts, 0);
+    log('Experiences ready');
+  }
+  try{ initExperiences(); }catch(err){ log('Experiences init failed: ' + (err && err.message ? err.message : String(err))); showDebug(); }
+
 })();
 <\/script>
 
@@ -1498,6 +2585,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Résumé — Read Only</title>
+<script>
+(function(){try{var p=window.parent.document.documentElement,d=document.documentElement;
+  if(p.getAttribute('data-theme')==='light') d.setAttribute('data-theme','light');
+  if(p.classList.contains('lite')) d.classList.add('lite');}catch(e){}})();
+<\/script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1799,6 +2891,104 @@
     .avatar-upload, .cv-upload { display:none !important; }
   }
 
+  /* ---------- experiences: images + video posts ---------- */
+  /* #experiences sits outside #resume-root so the résumé snapshot and field mapping never see it;
+     flex order slots it between #career and #skills without moving any résumé markup */
+  .wrap{ display:flex; flex-direction:column; }
+  #resume-root{ display:contents; }
+  #resume-root > #skills, #resume-root > #community, #resume-root > #certifications, #resume-root > #references, #resume-root > footer{ order:2; }
+  #experiences{ order:1; border-bottom:1px solid var(--line-soft); }
+
+  .exp-bar{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:22px; }
+  .exp-btn{
+    all:unset; cursor:pointer; font-family:inherit; font-weight:500; font-size:12px; color:var(--ink);
+    padding:10px 16px; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid transparent;
+    transition:all .2s var(--ease);
+  }
+  .exp-btn:hover{ background:rgba(176,58,63,0.3); border-color:var(--sanguine-bright); color:#fff; }
+  .exp-btn:active{ transform:scale(0.96); }
+  .exp-btn:focus-visible{ outline:1px solid var(--sanguine-bright); outline-offset:2px; }
+  .exp-btn[disabled]{ opacity:.5; cursor:default; pointer-events:none; }
+  .exp-status{ font-size:12px; color:var(--ink-dim); font-weight:400; letter-spacing:0.02em; min-height:1.4em; }
+
+  .exp-panel{ margin-top:8px; }
+  .exp-item{
+    display:grid; grid-template-columns:72px 1fr auto; gap:20px; align-items:center;
+    padding:20px 32px; border-top:1px solid var(--line-soft); cursor:pointer; position:relative; z-index:2;
+    transition:padding-left .3s var(--ease), background .3s var(--ease);
+  }
+  .exp-panel .exp-item:first-child{ border-top:none; }
+  .exp-item:hover{ padding-left:40px; background:rgba(255,255,255,0.02); }
+  .exp-item:focus-visible{ outline:1px solid var(--sanguine-bright); outline-offset:-3px; }
+  .exp-item.sel{ box-shadow:inset 2px 0 0 var(--sanguine-bright); }
+  .exp-thumb{
+    width:72px; height:54px; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:400; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint); text-align:center; line-height:1.3;
+  }
+  .exp-thumb img, .exp-thumb video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .exp-t{ font-weight:500; font-size:17px; letter-spacing:-0.01em; min-height:1.4em; }
+  .exp-m{ color:var(--ink-faint); font-size:12px; font-weight:300; margin-top:3px; }
+  .exp-x1{ color:var(--ink-dim); font-size:13.5px; font-weight:300; margin-top:6px; max-width:60ch; }
+  .exp-pill{ font-weight:500; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
+  .exp-pill.on{ color:var(--sanguine-bright); }
+  .exp-tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .exp-tag{ padding:5px 11px; font-size:11.5px; font-weight:400; color:var(--ink-dim); border-radius:999px; background:rgba(255,255,255,0.03); border:1px solid var(--line); }
+  .exp-empty{ padding:40px 32px; color:var(--ink-faint); font-size:14px; font-weight:300; position:relative; z-index:2; }
+  @media (max-width:640px){
+    .exp-item{ grid-template-columns:56px 1fr; padding:18px 20px; gap:14px; }
+    .exp-item:hover{ padding-left:28px; }
+    .exp-item .exp-pill{ grid-column:2; }
+    .exp-thumb{ width:56px; height:44px; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .exp-item, .exp-btn, .exp-drop, .exp-switch i, .exp-switch i::after, .exp-prog i{ transition:none; }
+  }
+  @media screen{
+    html[data-theme="light"]{
+      --bg:#F4ECE4;
+      --line:rgba(78,21,25,0.14);
+      --line-soft:rgba(78,21,25,0.07);
+      --ink:#2B1B19;
+      --ink-dim:#5C4A45;
+      --ink-faint:#75655E;
+      --sanguine-bright:#A33339;
+      --glass-fill:rgba(255,255,255,0.55);
+      --glass-border:rgba(122,32,39,0.16);
+      --glass-shadow:0 8px 32px rgba(78,21,25,0.14), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(78,21,25,0.06);
+    }
+    html[data-theme="light"] ::selection{ background:rgba(176,58,63,0.25); }
+    html[data-theme="light"] .glass::before{
+      background:linear-gradient(135deg, rgba(163,51,57,0.45), rgba(122,32,39,0.08) 40%, rgba(122,32,39,0.08) 60%, rgba(163,51,57,0.3));
+    }
+    html[data-theme="light"] .glass::after{ background:radial-gradient(ellipse at center top, rgba(255,255,255,0.7), transparent 70%); }
+  }
+  html.lite #webgl-bg, html.lite .stripes{ display:none; }
+  html.lite .glass{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+  /* lower-end device mode: no backdrop blur on the new panels */
+  html.lite #experiences .glass{ -webkit-backdrop-filter:none; backdrop-filter:none; }
+  /* print: the résumé prints exactly as before (plain block flow); the experiences section is screen-only */
+  @media print{
+    .wrap{ display:block; }
+    #resume-root{ display:block; }
+    #experiences{ display:none !important; }
+  }
+
+  .exp-open{ margin-top:8px; padding:40px clamp(24px,4vw,56px); }
+  .exp-open > *{ position:relative; z-index:2; }
+  .exp-h{ font-weight:300; font-size:clamp(28px, 4vw, 44px); line-height:1.1; letter-spacing:-0.03em; margin:18px 0 6px; }
+  .exp-dt{ color:var(--sanguine-bright); font-weight:500; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; }
+  .exp-lede{ color:var(--ink-dim); font-size:16px; font-weight:300; max-width:60ch; margin-top:14px; }
+  .exp-bodyv{ color:var(--ink-dim); font-size:15px; font-weight:300; max-width:60ch; margin-top:26px; }
+  .exp-bodyv div, .exp-bodyv p{ margin:0 0 12px; min-height:1.2em; }
+  .exp-gal{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:18px; margin-top:34px; }
+  .exp-fig{ margin:0; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--line); background:rgba(255,255,255,0.03); }
+  .exp-fig img, .exp-fig video{ display:block; width:100%; height:auto; max-height:520px; object-fit:contain; background:var(--bg); }
+  .exp-fig figcaption{ padding:10px 14px; font-size:12.5px; font-weight:300; color:var(--ink-dim); }
+  .exp-gone{ padding:26px 14px; text-align:center; font-size:12px; color:var(--ink-faint); }
+  @media print{ .exp-fig video{ display:none; } }
+
   /* scroll + rail polish */
   .rail{ overflow:visible; }
   .rail button{ position:relative; }
@@ -1823,6 +3013,7 @@
   <button data-target="philosophy" aria-label="Philosophy"></button>
   <button data-target="values" aria-label="Values"></button>
   <button data-target="career" aria-label="Career"></button>
+  <button data-target="experiences" aria-label="Experiences"></button>
   <button data-target="skills" aria-label="Skills"></button>
   <button data-target="community" aria-label="Community"></button>
   <button data-target="certifications" aria-label="Certifications"></button>
@@ -2092,6 +3283,14 @@
   </footer>
 
 </div>
+
+<section id="experiences">
+  <span class="kicker">Experiences</span>
+  <p class="section-hint">Projects and moments, with photos and video.</p>
+  <div class="exp-panel glass" id="exp-list" aria-live="polite"></div>
+  <article class="exp-open glass" id="exp-open" hidden></article>
+</section>
+
 </div>
 </main>
 
@@ -2115,9 +3314,14 @@
   const GL_SCALE = 0.5; // the background is soft noise, so half resolution looks identical and scrolls far smoother
   const calmGL = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const parentLite = (function(){ try{ return window.parent.document.documentElement.classList.contains('lite'); }catch(e){ return false; } })();
-  const gl = parentLite ? null : canvas.getContext('webgl'); // lower-end device mode: skip WebGL entirely
+  let gl = null, glTried = false, glOn = false, glRaf = 0, glRender = null;
+  let lightTarget = document.documentElement.getAttribute('data-theme') === 'light' ? 1 : 0, lightNow = lightTarget;
 
-  if (gl) {
+  function setupGL() {
+    if (glTried) return;
+    glTried = true;
+    gl = canvas.getContext('webgl');
+    if (!gl) return;
     const resize = () => {
       canvas.width = Math.max(1, Math.round(window.innerWidth * GL_SCALE));
       canvas.height = Math.max(1, Math.round(window.innerHeight * GL_SCALE));
@@ -2138,6 +3342,7 @@
       uniform vec2 u_resolution;
       uniform float u_time;
       uniform vec2 u_mouse;
+      uniform float u_light;
 
       float random(vec2 st) {
         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
@@ -2181,17 +3386,19 @@
         vec2 r = vec2(fbm(st + 4.0*q + vec2(1.7,9.2) + t*1.5), fbm(st + 4.0*q + vec2(8.3,2.8) - t*1.5));
         float f = fbm(st + 4.0*r + mouseInfluence);
 
-        vec3 color1 = vec3(0.07, 0.05, 0.04);
-        vec3 color2 = vec3(0.30, 0.08, 0.10);
-        vec3 color3 = vec3(0.69, 0.22, 0.25);
+        vec3 color1 = mix(vec3(0.07, 0.05, 0.04), vec3(0.96, 0.93, 0.90), u_light);
+        vec3 color2 = mix(vec3(0.30, 0.08, 0.10), vec3(0.90, 0.76, 0.74), u_light);
+        vec3 color3 = mix(vec3(0.69, 0.22, 0.25), vec3(0.74, 0.34, 0.36), u_light);
 
         vec3 color = mix(color1, color2, f);
         color = mix(color, color3, smoothstep(0.4, 0.8, f) * smoothstep(0.0, 0.5, length(q)));
 
-        color += vec3(0.15, 0.05, 0.05) * mouseInfluence;
+        color += vec3(0.15, 0.05, 0.05) * mouseInfluence * (1.0 - 0.6 * u_light);
 
         float vignette = smoothstep(1.5, 0.2, distance(st, vec2(0.5, 0.5)));
-        color *= 0.4 + vignette * 0.6;
+        vec3 darkMix  = color * (0.4 + vignette * 0.6);
+        vec3 lightMix = mix(color, vec3(0.91, 0.85, 0.80), (1.0 - vignette) * 0.55);
+        color = mix(darkMix, lightMix, u_light);
 
         gl_FragColor = vec4(color, 1.0);
       }
@@ -2222,6 +3429,7 @@
     const u_resolution = gl.getUniformLocation(program, "u_resolution");
     const u_time = gl.getUniformLocation(program, "u_time");
     const u_mouse = gl.getUniformLocation(program, "u_mouse");
+    const u_light = gl.getUniformLocation(program, "u_light");
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
@@ -2236,12 +3444,38 @@
       gl.uniform2f(u_resolution, canvas.width, canvas.height);
       gl.uniform1f(u_time, (performance.now() - startTime) / 1000);
       gl.uniform2f(u_mouse, mouseX * GL_SCALE, mouseY * GL_SCALE);
+      lightNow += (lightTarget - lightNow) * 0.08;
+      gl.uniform1f(u_light, lightNow);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      if(!calmGL) requestAnimationFrame(render);
+      if(!calmGL && glOn) glRaf = requestAnimationFrame(render);
     }
-    if(gl.getProgramParameter(program, gl.LINK_STATUS)) render();
+    glRender = render;
+    if(gl.getProgramParameter(program, gl.LINK_STATUS)){ glOn = true; render(); }
     else console.warn('[shader] link failed');
   }
+  if(!parentLite) setupGL(); // lower-end device mode: skip WebGL entirely
+
+  function applyTheme(light){
+    var de = document.documentElement;
+    if(light) de.setAttribute('data-theme', 'light'); else de.removeAttribute('data-theme');
+    lightTarget = light ? 1 : 0;
+    if(calmGL || !glOn) lightNow = lightTarget;
+    if(calmGL && glOn && glRender) glRender();
+  }
+  function applyLite(on){
+    document.documentElement.classList.toggle('lite', on);
+    if(on){ glOn = false; cancelAnimationFrame(glRaf); return; }
+    if(glRender){ if(!glOn){ glOn = true; glRender(); } }
+    else setupGL();
+  }
+  window.addEventListener('message', function(e){
+    if(e.source !== window.parent) return;
+    var d = e.data;
+    if(!d || typeof d !== 'object') return;
+    if(d.type === 'theme') applyTheme(d.value === 'light');
+    else if(d.type === 'lite') applyLite(!!d.value);
+    else if(d.type === 'debug') enableDebug(!!d.value);
+  });
 
   /* ============== NAVIGATION ============== */
   document.getElementById('btn-print').addEventListener('click', function(){ window.print(); });
@@ -2255,6 +3489,8 @@
     /* live query on purpose: the page markup can be replaced after load, which orphans a saved list */
     var secs = document.querySelectorAll('main section[id]');
     if(!secs.length) return;
+    /* visual order: #experiences sits after #career on screen but later in the DOM */
+    secs = Array.prototype.slice.call(secs).sort(function(a, b){ return a.getBoundingClientRect().top - b.getBoundingClientRect().top; });
     var current = secs[0].id;
     var line = window.innerHeight * 0.4;
     for(var i = 0; i < secs.length; i++){
@@ -2292,7 +3528,8 @@
     if(dbgPanel) dbgPanel.hidden = !on;
     if(dbgBtn) dbgBtn.textContent = on ? 'Hide debug' : 'Show debug';
   }
-  function showDebug(){ setDebug(true); }
+  var debugOn = false, dbgBound = false;
+  function showDebug(){ if(debugOn) setDebug(true); }
   function log(msg){
     var d = new Date();
     var line = '[' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds()) + '] ' + msg;
@@ -2310,16 +3547,42 @@
     try{ det = JSON.stringify(err); }catch(x){ det = String(err); }
     return 'Upload error: ' + (e.message || String(err)) + ' | code=' + (e.statusCode || 'n/a') + ' | details=' + det;
   }
-  if(dbgBtn) dbgBtn.addEventListener('click', function(){ setDebug(dbgPanel.hidden); });
+  function enableDebug(on){
+    debugOn = !!on;
+    if(dbgBtn){
+      dbgBtn.hidden = !debugOn;
+      dbgBtn.style.display = debugOn ? '' : 'none';
+      if(debugOn && !dbgBound){ dbgBound = true; dbgBtn.addEventListener('click', function(){ setDebug(dbgPanel.hidden); }); }
+    }
+    if(!debugOn && dbgPanel) setDebug(false);
+  }
+  enableDebug(false);
+  function ownError(e){
+    var f = (e && e.filename) || '';
+    if(e && e.message === 'Script error.' && !e.lineno) return false;
+    if(!f) return true;
+    var here = String(location.href).split('#')[0];
+    if(f.split('#')[0] === here || f === 'about:srcdoc') return true;
+    try{ if(location.origin && location.origin !== 'null' && f.indexOf(location.origin + '/') === 0) return true; }catch(x){}
+    return false;
+  }
+  function ownRejection(r){
+    if(typeof Event !== 'undefined' && r instanceof Event) return false;
+    var m = String((r && r.message) || r || '');
+    if(/failed to fetch|networkerror|load failed|websocket|realtime/i.test(m)) return false;
+    var s = (r && r.stack) ? String(r.stack) : '';
+    if(/https?:\/\//.test(s) && s.indexOf('about:srcdoc') === -1 && s.indexOf(String(location.href).split('#')[0]) === -1) return false;
+    return true;
+  }
   window.addEventListener('error', function(e){
     if(e && e.message && /^ResizeObserver/.test(e.message)) return; // harmless browser notice
     log('Page error: ' + (e && e.message) + ' (' + ((e && e.filename) || '') + ':' + ((e && e.lineno) || '') + ')');
-    showDebug();
+    if(ownError(e)) showDebug();
   });
   window.addEventListener('unhandledrejection', function(e){
     var r = e && e.reason;
     log('Unhandled rejection: ' + ((r && r.message) || String(r)));
-    showDebug();
+    if(ownRejection(r)) showDebug();
   });
   log('Debug panel ready');
 
@@ -2339,6 +3602,9 @@
   function safeUrl(u, imageOnly){
     if(!u) return '';
     return (imageOnly ? /^(data:image\/|https:)/i : /^(https?:|data:)/i).test(u) ? u : '';
+  }
+  function safePath(p){
+    return (typeof p === 'string' && p.length < 300 && /^[A-Za-z0-9_\-.\/]+$/.test(p) && p.indexOf('..') === -1) ? p : '';
   }
 
   function applyContent(html){
@@ -2414,6 +3680,18 @@
       var href = safeUrl(sLink.getAttribute('href'), false);
       if(href){ dLink.setAttribute('href', href); dLink.setAttribute('rel', 'noopener noreferrer'); }
       else { dLink.removeAttribute('href'); dLink.removeAttribute('rel'); }
+      var certPath = safePath(sLink.getAttribute('data-cert-path'));
+      if(certPath){
+        dLink.setAttribute('data-cert-path', certPath);
+        dLink.setAttribute('role', 'button');
+        dLink.setAttribute('tabindex', '0');
+        dLink.style.cursor = 'pointer';
+      } else {
+        dLink.removeAttribute('data-cert-path');
+        dLink.removeAttribute('role');
+        dLink.removeAttribute('tabindex');
+        dLink.style.cursor = '';
+      }
       dChips[j].classList.toggle('show', sChips[j].classList.contains('show'));
     }
     setActive(); // content height changed
@@ -2490,7 +3768,320 @@
     });
   }
 
+  async function openCert(certPath){
+    certPath = safePath(certPath);
+    if(!certPath) return;
+    var tab = null;
+    try{ tab = window.open('about:blank', '_blank'); }catch(e){ tab = null; }
+    try{
+      log('createSignedUrl called for path: ' + certPath);
+      var r = await sb.storage.from('cvs').createSignedUrl(certPath, 60);
+      if(r.error || !r.data || !r.data.signedUrl){
+        var err = r.error || new Error('no signed URL returned');
+        log('Signed URL error: ' + err.message + ' | details=' + JSON.stringify(err));
+        showDebug();
+        if(tab) try{ tab.close(); }catch(e){}
+        return;
+      }
+      log('Signed URL result: ok');
+      log('Opening new tab');
+      if(tab){
+        try{ tab.opener = null; }catch(e){}
+        tab.location.replace(r.data.signedUrl);
+      } else {
+        log('Pop-up blocked — allow pop-ups for this site');
+        showDebug();
+      }
+    }catch(err2){
+      log('Signed URL error: ' + (err2 && err2.message ? err2.message : String(err2)));
+      showDebug();
+      if(tab) try{ tab.close(); }catch(e){}
+    }
+  }
+  root.addEventListener('click', function(e){
+    var a = e.target.closest ? e.target.closest('a[data-cert-path]') : null;
+    if(!a) return;
+    e.preventDefault();
+    openCert(a.getAttribute('data-cert-path'));
+  });
+  root.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    var a = e.target.closest ? e.target.closest('a[data-cert-path]') : null;
+    if(!a) return;
+    e.preventDefault();
+    openCert(a.getAttribute('data-cert-path'));
+  });
+
   loadFromCloud();
+
+  /* ============== EXPERIENCES (live, read only) ============== */
+  /* Own state, own channel, own table (posts). The résumé load and its realtime channel above are untouched. */
+  if(parentLite) document.documentElement.classList.add('lite'); // new panels drop backdrop blur in lower-end device mode
+
+  function initExperiences(){
+    var PTABLE = 'posts', BUCKET = 'media';
+    function g(id){ return document.getElementById(id); }
+    var xList = g('exp-list'), xOpen = g('exp-open');
+    if(!xList || !xOpen) return;
+
+    var posts = [], openId = null, fetchSeq = 0, fetchTimer = 0, loaded = false;
+    var urlCache = new Map();   // path -> { url, exp } (signed URLs live only here, never in the DOM's data- attributes)
+    var urlPending = new Map(); // path -> in-flight signing job
+
+    function jd(err){ try{ return JSON.stringify(err); }catch(x){ return String(err); } }
+    function msgOf(err){ return err && err.message ? err.message : String(err); }
+    function fmtDate(iso){
+      try{ return new Date(iso).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }); }catch(e){ return ''; }
+    }
+
+    /* ---------- signed URLs (batched, cached by path) ---------- */
+    function cachedUrl(path){
+      var c = urlCache.get(path);
+      return c && c.exp - Date.now() > 60000 ? c.url : '';
+    }
+    function signMany(paths){
+      var need = [], waits = [];
+      paths.forEach(function(p){
+        if(!p || cachedUrl(p)) return;
+        if(urlPending.has(p)){ waits.push(urlPending.get(p)); return; }
+        if(need.indexOf(p) === -1) need.push(p);
+      });
+      if(need.length){
+        var job = (async function(){
+          log('createSignedUrl called for path: ' + need.join(', '));
+          try{
+            var r = await sb.storage.from(BUCKET).createSignedUrls(need, 3600);
+            if(r.error) throw r.error;
+            var okN = 0;
+            (r.data || []).forEach(function(row){
+              if(row && row.signedUrl){ urlCache.set(row.path, { url: row.signedUrl, exp: Date.now() + 3600 * 1000 }); okN++; }
+              else if(row){ log('Signed URL error: ' + (row.error || 'no URL returned') + ' | path=' + row.path); }
+            });
+            log('Signed URL result: ok (' + okN + '/' + need.length + ')');
+          }catch(err){
+            log('Signed URL error: ' + msgOf(err) + ' | details=' + jd(err) + ' — retrying one by one');
+            await Promise.all(need.map(function(p){
+              return sb.storage.from(BUCKET).createSignedUrl(p, 3600).then(function(r){
+                if(r.error || !r.data || !r.data.signedUrl) throw (r.error || new Error('no signed URL returned'));
+                urlCache.set(p, { url: r.data.signedUrl, exp: Date.now() + 3600 * 1000 });
+                log('Signed URL result: ok');
+              }).catch(function(e2){
+                log('Signed URL error: ' + msgOf(e2) + ' | details=' + jd(e2) + ' | path=' + p);
+                showDebug();
+              });
+            }));
+          }
+        })();
+        need.forEach(function(p){ urlPending.set(p, job); });
+        var clear = function(){ need.forEach(function(p){ if(urlPending.get(p) === job) urlPending.delete(p); }); };
+        job.then(clear, clear);
+        waits.push(job);
+      }
+      return Promise.all(waits);
+    }
+    function srcFor(path, isVideo){
+      var u = cachedUrl(path);
+      return u ? (isVideo ? u + '#t=0.1' : u) : '';
+    }
+    function applySrcs(box){
+      box.querySelectorAll('[data-path]').forEach(function(el){
+        if(el.getAttribute('src')) return;
+        var s = srcFor(el.getAttribute('data-path'), el.tagName === 'VIDEO');
+        if(s) el.src = s;
+      });
+    }
+    function fill(box){
+      applySrcs(box);
+      var need = [];
+      box.querySelectorAll('[data-path]').forEach(function(el){ if(!el.getAttribute('src')) need.push(el.getAttribute('data-path')); });
+      if(need.length) signMany(need).then(function(){ applySrcs(box); });
+    }
+    /* a signed URL that expired while the page stayed open: sign once more and retry once */
+    function retryOnce(el){
+      el.addEventListener('error', function(){
+        if(el.__retried) return;
+        el.__retried = true;
+        var p = el.getAttribute('data-path');
+        if(!p) return;
+        urlCache.delete(p);
+        signMany([p]).then(function(){ var s = srcFor(p, el.tagName === 'VIDEO'); if(s) el.src = s; });
+      });
+    }
+
+    /* ---------- rendering ---------- */
+    /* body goes through the same allowlist as the résumé text: copyClean builds fresh nodes, so no attributes or scripts survive */
+    function renderBody(html, into){
+      into.textContent = '';
+      var doc;
+      try{ doc = new DOMParser().parseFromString('<!DOCTYPE html><body>' + (html || ''), 'text/html'); }catch(e){ return; }
+      if(doc && doc.body) copyClean(doc.body, into);
+    }
+    function mkTags(tags){
+      if(!Array.isArray(tags) || !tags.length) return null;
+      var box = document.createElement('div'); box.className = 'exp-tags';
+      tags.forEach(function(t){
+        var s = document.createElement('span'); s.className = 'exp-tag'; s.textContent = String(t); box.appendChild(s);
+      });
+      return box;
+    }
+    function listRow(p){
+      var row = document.createElement('div');
+      row.className = 'exp-item';
+      row.setAttribute('role', 'button'); row.tabIndex = 0; row.setAttribute('data-id', p.id);
+      var th = document.createElement('div'); th.className = 'exp-thumb';
+      if(p.cover_path){
+        var im = document.createElement('img'); im.loading = 'lazy'; im.alt = '';
+        im.setAttribute('data-path', p.cover_path); retryOnce(im); th.appendChild(im);
+      } else { th.textContent = 'no cover'; }
+      var mid = document.createElement('div');
+      var t = document.createElement('div'); t.className = 'exp-t'; t.textContent = p.title || 'Untitled';
+      var m = document.createElement('div'); m.className = 'exp-m'; m.textContent = fmtDate(p.created_at);
+      mid.appendChild(t); mid.appendChild(m);
+      if(p.excerpt){ var x = document.createElement('div'); x.className = 'exp-x1'; x.textContent = p.excerpt; mid.appendChild(x); }
+      var tg = mkTags(p.tags); if(tg) mid.appendChild(tg);
+      var go = document.createElement('span'); go.className = 'exp-pill on'; go.textContent = 'Open';
+      row.appendChild(th); row.appendChild(mid); row.appendChild(go);
+      return row;
+    }
+    function renderList(){
+      xList.textContent = '';
+      if(!posts.length){
+        var em = document.createElement('div'); em.className = 'exp-empty';
+        em.textContent = loaded ? 'No experiences have been published yet.' : 'Loading…';
+        xList.appendChild(em);
+        return;
+      }
+      posts.forEach(function(p){ xList.appendChild(listRow(p)); });
+      fill(xList);
+    }
+    function figure(en){
+      var fig = document.createElement('figure'); fig.className = 'exp-fig';
+      var el;
+      if(en.type === 'video'){
+        el = document.createElement('video'); el.controls = true; el.preload = 'metadata'; el.setAttribute('playsinline', '');
+      } else {
+        el = document.createElement('img'); el.loading = 'lazy'; el.alt = en.caption || '';
+        if(en.width > 0 && en.height > 0){ el.width = en.width; el.height = en.height; }
+      }
+      el.setAttribute('data-path', en.path); retryOnce(el);
+      fig.appendChild(el);
+      if(en.caption){ var c = document.createElement('figcaption'); c.textContent = en.caption; fig.appendChild(c); }
+      return fig;
+    }
+    function renderOpen(p){
+      xOpen.textContent = '';
+      var back = document.createElement('button'); back.type = 'button'; back.className = 'exp-btn'; back.id = 'exp-back'; back.textContent = '← All experiences';
+      var dt = document.createElement('div'); dt.className = 'exp-dt'; dt.style.marginTop = '26px'; dt.textContent = fmtDate(p.created_at);
+      var h = document.createElement('h2'); h.className = 'exp-h'; h.textContent = p.title || 'Untitled';
+      xOpen.appendChild(back); xOpen.appendChild(dt); xOpen.appendChild(h);
+      if(p.excerpt){ var lede = document.createElement('p'); lede.className = 'exp-lede'; lede.textContent = p.excerpt; xOpen.appendChild(lede); }
+      var tg = mkTags(p.tags); if(tg) xOpen.appendChild(tg);
+      var body = document.createElement('div'); body.className = 'exp-bodyv'; renderBody(p.body, body); xOpen.appendChild(body);
+      var media = (Array.isArray(p.media) ? p.media : []).filter(function(m){ return m && m.path; });
+      if(media.length){
+        var gal = document.createElement('div'); gal.className = 'exp-gal';
+        media.forEach(function(m){ gal.appendChild(figure(m)); });
+        xOpen.appendChild(gal);
+        fill(gal);
+      }
+    }
+    function findPost(id){
+      for(var i = 0; i < posts.length; i++){ if(posts[i].id === id) return posts[i]; }
+      return null;
+    }
+    function showList(){
+      openId = null;
+      xOpen.hidden = true; xList.hidden = false;
+    }
+    function showOpen(id){
+      var p = findPost(id);
+      if(!p){ showList(); return; }
+      var wasOpen = openId === id;
+      openId = id;
+      renderOpen(p);
+      xList.hidden = true; xOpen.hidden = false;
+      if(!wasOpen){
+        var sec = g('experiences');
+        if(sec) sec.scrollIntoView({ behavior: calmMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+      setActive();
+    }
+    function renderAll(){
+      renderList();
+      if(openId){
+        if(findPost(openId)) showOpen(openId);
+        else { showList(); log('Open post is no longer published — back to the list'); }
+      }
+      setActive(); // content height changed
+    }
+
+    xList.addEventListener('click', function(e){
+      var row = e.target.closest ? e.target.closest('.exp-item') : null;
+      if(row) showOpen(row.getAttribute('data-id'));
+    });
+    xList.addEventListener('keydown', function(e){
+      if(e.key !== 'Enter' && e.key !== ' ') return;
+      var row = e.target.closest ? e.target.closest('.exp-item') : null;
+      if(!row) return;
+      e.preventDefault();
+      showOpen(row.getAttribute('data-id'));
+    });
+    xOpen.addEventListener('click', function(e){
+      if(e.target.closest && e.target.closest('#exp-back')){
+        showList();
+        setActive();
+        var sec = g('experiences');
+        if(sec) sec.scrollIntoView({ behavior: calmMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+    });
+
+    /* ---------- load + live updates ---------- */
+    async function fetchPosts(){
+      var mine = ++fetchSeq; // a newer fetch makes this one stale
+      try{
+        var r = await sb.from(PTABLE).select('*').eq('published', true).order('created_at', { ascending: false });
+        if(mine !== fetchSeq) return;
+        if(r.error){
+          log('Load error (posts): ' + r.error.message + ' | details=' + jd(r.error)); showDebug();
+          loaded = true; renderAll();
+          return;
+        }
+        posts = r.data || [];
+        loaded = true;
+        log('Posts loaded: ' + posts.length);
+        renderAll();
+      }catch(err){
+        log('Load error (posts): ' + msgOf(err)); showDebug();
+        if(mine === fetchSeq){ loaded = true; renderAll(); }
+      }
+    }
+    function queueFetch(){
+      clearTimeout(fetchTimer);
+      fetchTimer = setTimeout(fetchPosts, 250); // admin autosaves in bursts; coalesce them
+    }
+
+    var livePosts = null;
+    try{
+      livePosts = sb.channel('posts-live')
+        .on('postgres_changes',
+            { event: '*', schema: 'public', table: PTABLE },
+            function(payload){
+              log('Realtime posts change: ' + (payload && payload.eventType ? payload.eventType : 'unknown'));
+              queueFetch();
+            })
+        .subscribe();
+    }catch(e){ console.warn('[realtime posts]', e); }
+    /* signing out destroys this page; release the channel so the next sign-in can subscribe cleanly */
+    window.addEventListener('pagehide', function(){ try{ if(livePosts) sb.removeChannel(livePosts); }catch(e){} });
+    /* realtime only delivers rows a viewer can read, so an un-publish may not arrive as an event; catch up when the tab returns */
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden && loaded) queueFetch(); });
+
+    renderList();
+    fetchPosts();
+    log('Experiences ready');
+  }
+  try{ initExperiences(); }catch(err){ log('Experiences init failed: ' + (err && err.message ? err.message : String(err))); showDebug(); }
+
 })();
 <\/script>
 
@@ -2672,6 +4263,7 @@
   }
   var msg = $('msg'), go = $('go'), sub = $('sub'), foot = $('foot'), eye = $('eye');
   var mode = 'in', busy = false;
+  var frameLoaded = false, frameOnLoad = null;
   var unameReveal = $('uname-reveal'), unameEl = $('uname-status');
   var unameTimer = 0, unameReq = 0, unameState = '', unameChecked = '';
 
@@ -2686,6 +4278,28 @@
     liteBtn.setAttribute('aria-pressed', String(lite));
     liteBtn.setAttribute('data-tip', 'Lower-end device mode: ' + (lite ? 'On' : 'Off'));
   }
+  function toFrame(msg){
+    if(!frameLoaded) return;
+    try{ frame.contentWindow.postMessage(msg, '*'); }catch(err){ console.warn(err); }
+  }
+  function pushTheme(){ toFrame({ type: 'theme', value: lightTarget === 1 ? 'light' : 'dark' }); }
+  function pushLite(){ toFrame({ type: 'lite', value: lite }); }
+  function disarmFrame(){
+    frameLoaded = false;
+    if(frameOnLoad){ frame.removeEventListener('load', frameOnLoad); frameOnLoad = null; }
+  }
+  function armFrame(){
+    disarmFrame();
+    frameOnLoad = function(){
+      var href = '';
+      try{ href = frame.contentWindow.location.href; }catch(err){ href = ''; }
+      if(href === 'about:blank') return;
+      frame.removeEventListener('load', frameOnLoad); frameOnLoad = null;
+      frameLoaded = true;
+      pushTheme(); pushLite();
+    };
+    frame.addEventListener('load', frameOnLoad);
+  }
   themeBtn.addEventListener('click', function(){
     var light = lightTarget === 0;
     lightTarget = light ? 1 : 0;
@@ -2693,6 +4307,7 @@
     if(light) root.setAttribute('data-theme', 'light'); else root.removeAttribute('data-theme');
     remember('vanilla-theme', light ? 'light' : 'dark');
     syncThemeUI();
+    pushTheme();
   });
   liteBtn.addEventListener('click', function(){
     lite = !lite;
@@ -2700,6 +4315,7 @@
     remember('vanilla-lite', lite ? '1' : '0');
     if(lite) stopGL(); else startGL();
     syncLiteUI();
+    pushLite();
   });
   syncThemeUI(); syncLiteUI();
 
@@ -2860,6 +4476,7 @@
     var role = await fetchRole(session.user);
     $('who').textContent = (session.user.email || '').split('@')[0];
     $('role').textContent = role === 'admin' ? 'Admin' : 'Viewer';
+    armFrame();
     frame.srcdoc = pageFor(role);
     appEl.hidden = false;
     authEl.classList.add('leaving');
@@ -2869,6 +4486,7 @@
 
   function showAuth(){
     mountedFor = null;
+    disarmFrame();
     try{ sb.removeAllChannels(); }catch(err){ console.warn(err); } // drop live-update channels from the page being closed
     appEl.classList.remove('in'); appEl.hidden = true;
     frame.removeAttribute('srcdoc'); frame.src = 'about:blank';
